@@ -38,7 +38,7 @@ class Platform {
         try {
             const res = await this.http.get(`/livinglight/1/apply`);
 
-            if (res.data.result !== "failed") {
+            if (res.data.result !== "fail") {
                 const roomName = res.data.map?.name || "Living Room";
                 const units = res.data.units || [];
 
@@ -105,12 +105,31 @@ class Platform {
                 this.setupAccessory(acc);
             }
         }
+        const validUUIDs = allLights.map((l) =>
+            this.api.hap.uuid.generate(l.id),
+        );
+
+        const toRemove = this.accessories.filter(
+            (acc) => !validUUIDs.includes(acc.UUID),
+        );
+
+        if (toRemove.length) {
+            this.api.unregisterPlatformAccessories(
+                "ipark-hb",
+                "IPARKHB",
+                toRemove,
+            );
+
+            this.log.info(`Removed ${toRemove.length} stale accessories`);
+        }
     }
 
     setupAccessory(acc) {
-        const service =
-            acc.getService(Service.Lightbulb) ||
-            acc.addService(Service.Lightbulb);
+        let service = acc.getService(Service.Lightbulb);
+
+        if (!service) {
+            service = acc.addService(Service.Lightbulb);
+        }
 
         acc.service = service;
 
@@ -140,8 +159,6 @@ class Platform {
                     unit: acc.context.unit,
                     state: value ? "on" : "off",
                 });
-
-                this.log.info(`SET ${acc.displayName} -> ${value}`);
             });
     }
 }
