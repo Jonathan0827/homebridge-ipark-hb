@@ -63,7 +63,7 @@ class Platform {
         while (true) {
             try {
                 const res = await this.http.get(`/light/${j}/apply`);
-                if (res.data.result === "fail") break;
+                if (res.data.result !== "ok") break;
 
                 const roomName = res.data.map?.name || `Room ${j}`;
                 const units = res.data.units || [];
