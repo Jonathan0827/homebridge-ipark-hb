@@ -33,33 +33,55 @@ class Platform {
 
     async discoverDevices() {
         let allLights = [];
-        let roomIndex = 1;
 
-        while (true) {
-            try {
-                const res = await this.http.get(`/light/${roomIndex}/apply`);
+        // living room
+        try {
+            const res = await this.http.get(`/livinglight/1/apply`);
 
-                if (res.data.result === "fail") break;
-
-                const roomName = res.data.map?.name || `Room ${roomIndex}`;
+            if (res.data.result !== "failed") {
+                const roomName = res.data.map?.name || "Living Room";
                 const units = res.data.units || [];
 
                 for (const u of units) {
                     allLights.push({
-                        id: `${roomIndex}-${u.unit}`,
-                        room: roomIndex,
+                        id: `living-1-${u.unit}`,
+                        type: "livinglight",
+                        room: 1,
                         unit: u.unit,
                         name: u.name || `${roomName} ${u.unit}`,
                     });
                 }
 
-                this.log.info(`Room ${roomIndex}: ${units.length} devices`);
-                roomIndex++;
+                this.log.info(`Living room: ${units.length} devices`);
+            }
+        } catch (e) {
+            this.log.error("Living room discovery failed", e.message);
+        }
+
+        // other rooms
+        let j = 1;
+        while (true) {
+            try {
+                const res = await this.http.get(`/light/${j}/apply`);
+                if (res.data.result === "failed") break;
+
+                const roomName = res.data.map?.name || `Room ${j}`;
+                const units = res.data.units || [];
+
+                for (const u of units) {
+                    allLights.push({
+                        id: `room-${j}-${u.unit}`,
+                        type: "light",
+                        room: j,
+                        unit: u.unit,
+                        name: u.name || `${roomName} ${u.unit}`,
+                    });
+                }
+
+                this.log.info(`Room ${j}: ${units.length} devices`);
+                j++;
             } catch (e) {
-                this.log.error(
-                    `Discovery error at room ${roomIndex}`,
-                    e.message,
-                );
+                this.log.error(`Room ${j} discovery failed`, e.message);
                 break;
             }
         }
@@ -77,7 +99,7 @@ class Platform {
                 this.api.registerPlatformAccessories("ipark-hb", "IPARKHB", [
                     acc,
                 ]);
-                this.log.info(`Added accessory: ${light.name}`);
+                this.log.info(`Added ${light.name}`);
             } else {
                 acc.context = light;
                 this.setupAccessory(acc);
@@ -95,41 +117,31 @@ class Platform {
         service
             .getCharacteristic(Characteristic.On)
             .onGet(async () => {
-                try {
-                    const res = await this.http.get(
-                        `/light/${acc.context.room}/apply`,
-                    );
+                const path =
+                    acc.context.type === "livinglight"
+                        ? `/livinglight/${acc.context.room}/apply`
+                        : `/light/${acc.context.room}/apply`;
 
-                    const device = res.data.units.find(
-                        (u) => u.unit === acc.context.unit,
-                    );
+                const res = await this.http.get(path);
 
-                    return device?.state === "on";
-                } catch (e) {
-                    this.log.error(
-                        `GET failed for ${acc.displayName}`,
-                        e.message,
-                    );
-                    return false;
-                }
+                const device = res.data.units.find(
+                    (u) => u.unit === acc.context.unit,
+                );
+
+                return device?.state === "on";
             })
             .onSet(async (value) => {
-                try {
-                    await this.http.put(`/light/${acc.context.room}/apply`, {
-                        unit: acc.context.unit,
-                        state: value ? "on" : "off",
-                    });
+                const path =
+                    acc.context.type === "livinglight"
+                        ? `/livinglight/${acc.context.room}/apply`
+                        : `/light/${acc.context.room}/apply`;
 
-                    this.log.info(
-                        `SET ${acc.displayName} -> ${value ? "on" : "off"}`,
-                    );
-                } catch (e) {
-                    this.log.error(
-                        `SET failed for ${acc.displayName}`,
-                        e.message,
-                    );
-                    throw e;
-                }
+                await this.http.put(path, {
+                    unit: acc.context.unit,
+                    state: value ? "on" : "off",
+                });
+
+                this.log.info(`SET ${acc.displayName} -> ${value}`);
             });
     }
 }

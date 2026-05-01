@@ -13,7 +13,7 @@
         "homebridge-plugin"
     ],
     "author": "",
-    "license": "ISC",
+    "license": "WTFPL",
     "homepage": "https://github.com/Jonathan0827/homebridge-ipark-hb#readme",
     "description": "",
     "peerDependencies": {
