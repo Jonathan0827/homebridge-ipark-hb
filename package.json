@@ -16,7 +16,7 @@
     },
     "homepage": "https://github.com/Jonathan0827/IPARKCity1-homebridge#readme",
     "description": "",
-    "dependencies": {
+    "peerDependencies": {
         "homebridge": "^1.11.4"
     }
 }
