@@ -7,14 +7,11 @@
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/Jonathan0827/IPARKCity1-homebridge.git"
+        "url": "git+https://github.com/Jonathan0827/homebridge-ipark-hb.git"
     },
     "author": "",
     "license": "ISC",
-    "bugs": {
-        "url": "https://github.com/Jonathan0827/IPARKCity1-homebridge/issues"
-    },
-    "homepage": "https://github.com/Jonathan0827/IPARKCity1-homebridge#readme",
+    "homepage": "https://github.com/Jonathan0827/homebridge-ipark-hb#readme",
     "description": "",
     "peerDependencies": {
         "homebridge": "^1.11.4"
