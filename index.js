@@ -128,19 +128,19 @@ class Platform {
             this.api.hap.uuid.generate(l.id),
         );
 
-        const toRemove = this.accessories.filter(
-            (acc) => !validUUIDs.includes(acc.UUID),
-        );
+        // const toRemove = this.accessories.filter(
+        //     (acc) => !validUUIDs.includes(acc.UUID),
+        // );
 
-        if (toRemove.length) {
-            this.api.unregisterPlatformAccessories(
-                "ipark-hb",
-                "IPARKHB",
-                toRemove,
-            );
+        // if (toRemove.length) {
+        //     this.api.unregisterPlatformAccessories(
+        //         "ipark-hb",
+        //         "IPARKHB",
+        //         toRemove,
+        //     );
 
-            this.log.info(`Removed ${toRemove.length} stale accessories`);
-        }
+        //     this.log.info(`Removed ${toRemove.length} stale accessories`);
+        // }
     }
 
     setupAccessory(acc) {
