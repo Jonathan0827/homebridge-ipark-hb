@@ -40,9 +40,15 @@ class Elevator {
 
         platform.token = await platform.getAccessToken();
 
-        const res = await platform
-            .http(platform.token)
-            .post(`/elevator/down`, "down");
+        const res = await axios.post(
+            "https://idj1.hdc-smart.com/v2/api/elevator/down",
+            "down",
+            {
+                headers: {
+                    "access-token": platform.token,
+                },
+            },
+        );
     }
 }
 
