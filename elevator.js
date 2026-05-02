@@ -42,7 +42,7 @@ class Elevator {
 
         const res = await platform
             .http(platform.token)
-            .post(`/elevator/${acc.context.unit}`, acc.context.unit);
+            .post(`/elevator/down`, "down");
     }
 }
 
