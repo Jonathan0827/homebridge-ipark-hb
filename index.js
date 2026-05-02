@@ -26,7 +26,7 @@ class Platform {
     async initialize() {
         let devices = [];
         try {
-            devices = await Lightbulb.discover(this);
+            devices = await Lightbulb.discoverDevices(this);
         } catch (e) {
             this.log.error("Discovery failed", e.message);
             return;
