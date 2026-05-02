@@ -89,7 +89,24 @@ class Thermostat {
     }
 
     async setTargetState(value) {
-        this.log.debug("haha do you think this works? nah");
+        const { platform, acc } = this;
+
+        platform.token = await platform.getAccessToken();
+
+        const res = await platform
+            .http(platform.token)
+            .get("/thermostat/1/apply");
+        const device = res.data?.units?.find(
+            (u) => u.unit === acc.context.unit,
+        );
+        const ds = device?.state;
+        const dl = ds.split("/");
+        const currentTargetTemp = dl[1];
+        const targetMode = value === 0 ? "off" : currentTargetTemp || "on";
+        await platform.http(platform.token).put("/thermostat/1/apply", {
+            unit: acc.context.unit,
+            state: `${targetMode}/${currentTargetTemp || "20"}`,
+        });
     }
 
     async getCurrentTemperature() {
@@ -125,7 +142,23 @@ class Thermostat {
     }
 
     async setTargetTemperature(value) {
-        return;
+        const { platform, acc } = this;
+
+        platform.token = await platform.getAccessToken();
+
+        const res = await platform
+            .http(platform.token)
+            .get("/thermostat/1/apply");
+        const device = res.data?.units?.find(
+            (u) => u.unit === acc.context.unit,
+        );
+        const ds = device?.state;
+        const dl = ds.split("/");
+        const currentTargetMode = dl[0];
+        await platform.http(platform.token).put("/thermostat/1/apply", {
+            unit: acc.context.unit,
+            state: `${currentTargetMode}/${value}`,
+        });
     }
 }
 
