@@ -14,7 +14,7 @@ class Platform {
         this.api = api;
         this.config = config;
         this.accessories = [];
-
+        this.token = null;
         this.http = (accessToken) =>
             axios.create({
                 baseURL: "https://idj1.hdc-smart.com/v2/api/features",
@@ -51,8 +51,10 @@ class Platform {
         }
     }
     async discoverDevices() {
+        if (!this.token) {
+            this.token = await this.getAccessToken();
+        }
         let allLights = [];
-        this.token = await this.getAccessToken();
         // living room
         try {
             const res = await this.http(this.token).get(`/livinglight/1/apply`);
@@ -146,7 +148,6 @@ class Platform {
     }
 
     setupAccessory(acc) {
-        let token = this.getAccessToken();
         let service = acc.getService(Service.Lightbulb);
         if (!service) {
             service = acc.addService(Service.Lightbulb);
@@ -157,26 +158,32 @@ class Platform {
         service
             .getCharacteristic(Characteristic.On)
             .onGet(async () => {
+                if (!this.token) {
+                    this.token = await this.getAccessToken();
+                }
                 const path =
                     acc.context.type === "livinglight"
                         ? `/livinglight/${acc.context.room}/apply`
                         : `/light/${acc.context.room}/apply`;
 
-                const res = await this.http(token).get(path);
+                const res = await this.http(this.token).get(path);
+                if (!res.data || !res.data.units) return false;
 
                 const device = res.data.units.find(
                     (u) => u.unit === acc.context.unit,
                 );
-
-                return device.state === "on";
+                return device?.state === "on";
             })
             .onSet(async (value) => {
+                if (!this.token) {
+                    this.token = await this.getAccessToken();
+                }
                 const path =
                     acc.context.type === "livinglight"
                         ? `/livinglight/${acc.context.room}/apply`
                         : `/light/${acc.context.room}/apply`;
 
-                await this.http(token).put(path, {
+                await this.http(this.token).put(path, {
                     unit: acc.context.unit,
                     state: value ? "on" : "off",
                 });
