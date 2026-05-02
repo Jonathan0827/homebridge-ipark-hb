@@ -220,7 +220,9 @@ class Lightbulb {
                     });
                 }
             }
-        } catch {}
+        } catch (e) {
+            platform.log.error("Living room discovery failed", e.message);
+        }
 
         // other rooms
         let i = 1;
@@ -241,7 +243,8 @@ class Lightbulb {
                 }
 
                 i++;
-            } catch {
+            } catch (e) {
+                platform.log.error(`Room ${i} discovery failed`, e.message);
                 break;
             }
         }
@@ -252,9 +255,7 @@ class Lightbulb {
     async onGet() {
         const { platform, acc } = this;
 
-        if (!platform.token) {
-            platform.token = await platform.getAccessToken();
-        }
+        platform.token = await platform.getAccessToken();
 
         const path =
             acc.context.type === "livinglight"
@@ -272,9 +273,7 @@ class Lightbulb {
     async onSet(value) {
         const { platform, acc } = this;
 
-        if (!platform.token) {
-            platform.token = await platform.getAccessToken();
-        }
+        platform.token = await platform.getAccessToken();
 
         const path =
             acc.context.type === "livinglight"

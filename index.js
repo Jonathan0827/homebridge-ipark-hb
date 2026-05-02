@@ -1,6 +1,5 @@
-let Service, Characteristic;
 const Lightbulb = require("./lightbulb");
-
+const axios = require("axios");
 module.exports = (api) => {
     Service = api.hap.Service;
     Characteristic = api.hap.Characteristic;
@@ -13,6 +12,13 @@ class Platform {
         this.config = config;
         this.api = api;
         this.accessories = [];
+        this.http = (token) =>
+            axios.create({
+                baseURL: "https://idj1.hdc-smart.com/v2/api/features",
+                headers: {
+                    "access-token": token,
+                },
+            });
         api.on("didFinishLaunching", async () => {
             await this.initialize();
         });
@@ -21,11 +27,29 @@ class Platform {
     configureAccessory(acc) {
         this.accessories.push(acc);
     }
+    async getAccessToken() {
+        try {
+            const res = await axios.post(
+                "https://center.hdc-smart.com/v3/auth/login",
+                "V2",
+                {
+                    headers: {
+                        Authorization: this.config.auth,
+                        "X-API-KEY": this.config.apiKey,
+                    },
+                },
+            );
 
+            return res.data["access-token"];
+        } catch (e) {
+            this.log.error("Authentication failed", e.message);
+            return null;
+        }
+    }
     async initialize() {
         let lights = [];
         try {
-            lights = await this.lightulb.discoverDevices();
+            lights = await Lightbulb.discoverDevices(this);
         } catch (e) {
             this.log.error("Discovery failed", e.message);
             return;
