@@ -1,5 +1,5 @@
 let Service, Characteristic;
-const LightbulbPlugin = require("./lightbulb");
+const Lightbulb = require("./lightbulb");
 
 module.exports = (api) => {
     Service = api.hap.Service;
@@ -13,7 +13,6 @@ class Platform {
         this.config = config;
         this.api = api;
         this.accessories = [];
-        this.lightulb = new LightbulbPlugin(log, config, api);
         api.on("didFinishLaunching", async () => {
             await this.initialize();
         });
