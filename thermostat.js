@@ -55,23 +55,73 @@ class Thermostat {
     }
 
     async getCurrentState() {
-        return 0;
+        const { platform, acc } = this;
+
+        platform.token = await platform.getAccessToken();
+
+        const res = await platform
+            .http(platform.token)
+            .get("/thermostat/1/apply");
+        const device = res.data?.units?.find(
+            (u) => u.unit === acc.context.unit,
+        );
+        const ds = device?.state;
+        const dl = ds.split("/");
+        if (dl[0] === "off") return 0;
+        else return 1;
     }
 
     async getTargetState() {
-        return 0;
+        const { platform, acc } = this;
+
+        platform.token = await platform.getAccessToken();
+
+        const res = await platform
+            .http(platform.token)
+            .get("/thermostat/1/apply");
+        const device = res.data?.units?.find(
+            (u) => u.unit === acc.context.unit,
+        );
+        const ds = device?.state;
+        const dl = ds.split("/");
+        if (dl[0] === "off") return 0;
+        else return 3;
     }
 
     async setTargetState(value) {
-        return;
+        this.log.debug("haha do you think this works? nah");
     }
 
     async getCurrentTemperature() {
-        return 20;
+        const { platform, acc } = this;
+
+        platform.token = await platform.getAccessToken();
+
+        const res = await platform
+            .http(platform.token)
+            .get("/thermostat/1/apply");
+        const device = res.data?.units?.find(
+            (u) => u.unit === acc.context.unit,
+        );
+        const ds = device?.state;
+        const dl = ds.split("/");
+        return dl[2];
     }
 
     async getTargetTemperature() {
-        return 22;
+        const { platform, acc } = this;
+
+        platform.token = await platform.getAccessToken();
+
+        const res = await platform
+            .http(platform.token)
+            .get("/thermostat/1/apply");
+        const device = res.data?.units?.find(
+            (u) => u.unit === acc.context.unit,
+        );
+        const ds = device?.state;
+        const dl = ds.split("/");
+        return dl[1];
     }
 
     async setTargetTemperature(value) {
