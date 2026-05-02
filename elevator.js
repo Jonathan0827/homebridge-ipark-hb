@@ -12,7 +12,7 @@ class Elevator {
             acc.getService(Service.Switch) || acc.addService(Service.Switch);
 
         service
-            .getCharacteristic(Characteristic.CurrentHeatingCoolingState)
+            .getCharacteristic(Characteristic.On)
             .onGet(this.getCurrentState.bind(this))
             .onSet(this.setTargetState.bind(this));
     }
