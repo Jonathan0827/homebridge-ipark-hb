@@ -19,13 +19,13 @@ class Elevator {
     static discoverDevices(platform) {
         return [
             {
-                id: "elevator-up",
+                id: "elevator",
                 type: "button",
                 unit: "up",
                 name: "Elevator Up",
             },
             {
-                id: "elevator-down",
+                id: "elevator",
                 type: "button",
                 unit: "down",
                 name: "Elevator Down",
