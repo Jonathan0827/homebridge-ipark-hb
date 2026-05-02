@@ -23,42 +23,30 @@ class Platform {
     }
 
     async initialize() {
-        let devices = [];
+        let lights = [];
         try {
-            devices = await this.lightulb.discoverDevices();
+            lights = await this.lightulb.discoverDevices();
         } catch (e) {
             this.log.error("Discovery failed", e.message);
             return;
         }
 
-        const validUUIDs = devices.map((d) => this.api.hap.uuid.generate(d.id));
+        const validUUIDs = lights.map((l) => this.api.hap.uuid.generate(l.id));
 
-        // const toRemove = this.accessories.filter(
-        //     (acc) => !validUUIDs.includes(acc.UUID),
-        // );
-
-        // if (toRemove.length) {
-        //     this.api.unregisterPlatformAccessories(
-        //         "ipark-hb",
-        //         "IPARKHB",
-        //         toRemove,
-        //     );
-        // }
-
-        devices.forEach((device) => {
-            const uuid = this.api.hap.uuid.generate(device.id);
+        lights.forEach((light) => {
+            const uuid = this.api.hap.uuid.generate(light.id);
 
             let acc = this.accessories.find((a) => a.UUID === uuid);
 
             if (!acc) {
-                acc = new this.api.platformAccessory(device.name, uuid);
-                acc.context = device;
+                acc = new this.api.platformAccessory(light.name, uuid);
+                acc.context = light;
 
                 this.api.registerPlatformAccessories("ipark-hb", "IPARKHB", [
                     acc,
                 ]);
             } else {
-                acc.context = device;
+                acc.context = light;
             }
 
             if (!acc._lightbulbInstance) {
