@@ -102,7 +102,7 @@ class Thermostat {
         const ds = device?.state;
         const dl = ds.split("/");
         const currentTargetTemp = dl[1];
-        const targetMode = value === 0 ? "off" : currentTargetTemp || "on";
+        const targetMode = value === 0 ? "off" : "on";
         await platform.http(platform.token).put("/thermostat/1/apply", {
             unit: acc.context.unit,
             state: `${targetMode}/${currentTargetTemp || "20"}`,
