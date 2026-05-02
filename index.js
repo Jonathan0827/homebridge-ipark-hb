@@ -15,14 +15,15 @@ class Platform {
         this.config = config;
         this.accessories = [];
 
-        this.http = axios.create({
-            baseURL: "https://idj1.hdc-smart.com/v2/api/features",
-            timeout: 5000,
-            headers: {
-                "access-token": config.token,
-                "Content-Type": "application/json",
-            },
-        });
+        this.http = (accessToken) =>
+            axios.create({
+                baseURL: "https://idj1.hdc-smart.com/v2/api/features",
+                timeout: 5000,
+                headers: {
+                    "access-token": accessToken,
+                    "Content-Type": "application/json",
+                },
+            });
 
         api.on("didFinishLaunching", () => this.discoverDevices());
     }
@@ -30,13 +31,31 @@ class Platform {
     configureAccessory(acc) {
         this.accessories.push(acc);
     }
+    async getAccessToken() {
+        try {
+            const res = await axios.post(
+                "https://idj1.hdc-smart.com/v3/auth/login",
+                "V2",
+                {
+                    headers: {
+                        Authorization: this.config.auth,
+                        "X-API-KEY": this.config.apiKey,
+                    },
+                },
+            );
 
+            return res.data["access-token"];
+        } catch (e) {
+            this.log.error("Authentication failed", e.message);
+            return null;
+        }
+    }
     async discoverDevices() {
         let allLights = [];
-
+        let token = await this.getAccessToken();
         // living room
         try {
-            const res = await this.http.get(`/livinglight/1/apply`);
+            const res = await this.http(token).get(`/livinglight/1/apply`);
 
             if (res.data.result !== "fail") {
                 const roomName = res.data.map?.name || "Living Room";
@@ -62,7 +81,7 @@ class Platform {
         let j = 1;
         while (true) {
             try {
-                const res = await this.http.get(`/light/${j}/apply`);
+                const res = await this.http(token).get(`/light/${j}/apply`);
                 if (res.data.result !== "ok") break;
 
                 const roomName = res.data.map?.name || `Room ${j}`;
@@ -126,7 +145,6 @@ class Platform {
 
     setupAccessory(acc) {
         let service = acc.getService(Service.Lightbulb);
-
         if (!service) {
             service = acc.addService(Service.Lightbulb);
         }
@@ -141,7 +159,7 @@ class Platform {
                         ? `/livinglight/${acc.context.room}/apply`
                         : `/light/${acc.context.room}/apply`;
 
-                const res = await this.http.get(path);
+                const res = await this.http(token).get(path);
 
                 const device = res.data.units.find(
                     (u) => u.unit === acc.context.unit,
@@ -155,7 +173,7 @@ class Platform {
                         ? `/livinglight/${acc.context.room}/apply`
                         : `/light/${acc.context.room}/apply`;
 
-                await this.http.put(path, {
+                await this.http(token).put(path, {
                     unit: acc.context.unit,
                     state: value ? "on" : "off",
                 });
