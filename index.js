@@ -1,5 +1,5 @@
 let Service, Characteristic;
-const Lightbulb = require("./lightbulb");
+const LightbulbPlugin = require("./lightbulb");
 
 module.exports = (api) => {
     Service = api.hap.Service;
@@ -13,7 +13,7 @@ class Platform {
         this.config = config;
         this.api = api;
         this.accessories = [];
-
+        this.lightulb = new LightbulbPlugin(log, config, api);
         api.on("didFinishLaunching", async () => {
             await this.initialize();
         });
@@ -26,7 +26,7 @@ class Platform {
     async initialize() {
         let devices = [];
         try {
-            devices = await Lightbulb.discoverDevices(this);
+            devices = await this.lightulb.discoverDevices();
         } catch (e) {
             this.log.error("Discovery failed", e.message);
             return;
