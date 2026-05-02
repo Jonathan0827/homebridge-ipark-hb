@@ -1,5 +1,6 @@
 const Lightbulb = require("./lightbulb");
 const Thermostat = require("./thermostat");
+const Elevator = require("./elevator");
 const axios = require("axios");
 module.exports = (api) => {
     Service = api.hap.Service;
@@ -64,7 +65,13 @@ class Platform {
             return;
         }
 
-        const validUUIDs = lights.map((l) => this.api.hap.uuid.generate(l.id));
+        let elevators = [];
+        try {
+            elevators = await Elevator.discoverDevices(this);
+        } catch (e) {
+            this.log.error("Elevator discovery failed", e.message);
+            return;
+        }
 
         lights.forEach((light) => {
             const uuid = this.api.hap.uuid.generate(light.id);
@@ -105,6 +112,27 @@ class Platform {
 
             if (!acc._thermostatInstance) {
                 acc._thermostatInstance = new Thermostat(this, acc);
+            }
+        });
+
+        elevators.forEach((elevator) => {
+            const uuid = this.api.hap.uuid.generate(elevator.id);
+
+            let acc = this.accessories.find((a) => a.UUID === uuid);
+
+            if (!acc) {
+                acc = new this.api.platformAccessory(elevator.name, uuid);
+                acc.context = elevator;
+
+                this.api.registerPlatformAccessories("ipark-hb", "IPARKHB", [
+                    acc,
+                ]);
+            } else {
+                acc.context = elevator;
+            }
+
+            if (!acc._elevatorInstance) {
+                acc._elevatorInstance = new Elevator(this, acc);
             }
         });
     }
