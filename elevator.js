@@ -9,7 +9,7 @@ class Elevator {
         const Characteristic = platform.api.hap.Characteristic;
 
         const service =
-            acc.getService(Service.Button) || acc.addService(Service.Button);
+            acc.getService(Service.Switch) || acc.addService(Service.Switch);
 
         service
             .getCharacteristic(Characteristic.CurrentHeatingCoolingState)
