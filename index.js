@@ -1,4 +1,5 @@
 const Lightbulb = require("./lightbulb");
+const Thermostat = require("./thermostat");
 const axios = require("axios");
 module.exports = (api) => {
     Service = api.hap.Service;
@@ -51,7 +52,15 @@ class Platform {
         try {
             lights = await Lightbulb.discoverDevices(this);
         } catch (e) {
-            this.log.error("Discovery failed", e.message);
+            this.log.error("Light discovery failed", e.message);
+            return;
+        }
+
+        let thermostats = [];
+        try {
+            thermostats = await Thermostat.discoverDevices(this);
+        } catch (e) {
+            this.log.error("Thermostat discovery failed", e.message);
             return;
         }
 
@@ -75,6 +84,27 @@ class Platform {
 
             if (!acc._lightbulbInstance) {
                 acc._lightbulbInstance = new Lightbulb(this, acc);
+            }
+        });
+
+        thermostats.forEach((thermostat) => {
+            const uuid = this.api.hap.uuid.generate(thermostat.id);
+
+            let acc = this.accessories.find((a) => a.UUID === uuid);
+
+            if (!acc) {
+                acc = new this.api.platformAccessory(thermostat.name, uuid);
+                acc.context = thermostat;
+
+                this.api.registerPlatformAccessories("ipark-hb", "IPARKHB", [
+                    acc,
+                ]);
+            } else {
+                acc.context = thermostat;
+            }
+
+            if (!acc._thermostatInstance) {
+                acc._thermostatInstance = new Thermostat(this, acc);
             }
         });
     }
