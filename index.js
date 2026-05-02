@@ -165,7 +165,7 @@ class Platform {
                     (u) => u.unit === acc.context.unit,
                 );
 
-                return device?.state === "on";
+                return device.state === "on";
             })
             .onSet(async (value) => {
                 const path =
