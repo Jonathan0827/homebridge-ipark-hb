@@ -52,10 +52,10 @@ class Platform {
     }
     async discoverDevices() {
         let allLights = [];
-        let token = await this.getAccessToken();
+        this.token = await this.getAccessToken();
         // living room
         try {
-            const res = await this.http(token).get(`/livinglight/1/apply`);
+            const res = await this.http(this.token).get(`/livinglight/1/apply`);
 
             if (res.data.result !== "fail") {
                 const roomName = res.data.map?.name || "Living Room";
@@ -81,7 +81,9 @@ class Platform {
         let j = 1;
         while (true) {
             try {
-                const res = await this.http(token).get(`/light/${j}/apply`);
+                const res = await this.http(this.token).get(
+                    `/light/${j}/apply`,
+                );
                 if (res.data.result !== "ok") break;
 
                 const roomName = res.data.map?.name || `Room ${j}`;
@@ -144,6 +146,7 @@ class Platform {
     }
 
     setupAccessory(acc) {
+        let token = this.getAccessToken();
         let service = acc.getService(Service.Lightbulb);
         if (!service) {
             service = acc.addService(Service.Lightbulb);
