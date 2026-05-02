@@ -34,7 +34,7 @@ class Platform {
     async getAccessToken() {
         try {
             const res = await axios.post(
-                "https://idj1.hdc-smart.com/v3/auth/login",
+                "https://center.hdc-smart.com/v3/auth/login",
                 "V2",
                 {
                     headers: {
