@@ -72,7 +72,13 @@ class Platform {
             this.log.error("Elevator discovery failed", e.message);
             return;
         }
-
+        let doors = [];
+        try {
+            doors = await Doors.discoverDevices(this);
+        } catch (e) {
+            this.log.error("Door discovery failed", e.message);
+            return;
+        }
         lights.forEach((light) => {
             const uuid = this.api.hap.uuid.generate(light.id);
 
@@ -133,6 +139,26 @@ class Platform {
 
             if (!acc._elevatorInstance) {
                 acc._elevatorInstance = new Elevator(this, acc);
+            }
+        });
+        doors.forEach((door) => {
+            const uuid = this.api.hap.uuid.generate(door.id);
+
+            let acc = this.accessories.find((a) => a.UUID === uuid);
+
+            if (!acc) {
+                acc = new this.api.platformAccessory(door.name, uuid);
+                acc.context = door;
+
+                this.api.registerPlatformAccessories("ipark-hb", "IPARKHB", [
+                    acc,
+                ]);
+            } else {
+                acc.context = door;
+            }
+
+            if (!acc._doorInstance) {
+                acc._doorInstance = new Doors(this, acc);
             }
         });
     }

@@ -33,7 +33,7 @@ class Lightbulb {
                 for (const u of units) {
                     allLights.push({
                         id: `living-1-${u.unit}`,
-                        type: "button",
+                        type: "livinglight",
                         room: 1,
                         unit: u.unit,
                         name: u.name || `Living ${u.unit}`,
