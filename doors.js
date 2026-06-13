@@ -14,10 +14,10 @@ class Doors {
 
         service
             .getCharacteristic(Characteristic.CurrentDoorState)
-            .onGet(() => 0);
+            .onGet(() => 1);
         service
             .getCharacteristic(Characteristic.ObstructionDetected)
-            .onGet(() => 0);
+            .onGet(() => false);
         service
             .getCharacteristic(Characteristic.TargetDoorState)
             .onGet(() => 0)
