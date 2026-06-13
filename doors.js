@@ -17,7 +17,7 @@ class Doors {
         service
             .getCharacteristic(Characteristic.TargetDoorState)
             .onGet(0)
-            .onSet(this.onSet.bind(this));
+            .onSet(this.open.bind(this));
     }
 
     static async discoverDevices(platform) {
