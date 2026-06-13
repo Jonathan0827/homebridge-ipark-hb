@@ -35,7 +35,7 @@ class Doors {
                     },
                 },
             );
-            const doors = res.data.doors || [];
+            const doors = res.data.doors;
             let doorList = [];
             for (const d of doors) {
                 doorList.push({
