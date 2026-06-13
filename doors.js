@@ -45,6 +45,7 @@ class Doors {
                     name: d.lobby_name,
                 });
             }
+            platform.log.info("Discovered doors:", doorList);
             return doorList;
         } catch (e) {
             platform.log.error("Door discovery failed", e.message);
