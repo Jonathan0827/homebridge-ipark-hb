@@ -159,7 +159,7 @@ class Platform {
             }
 
             if (!acc._doorInstance) {
-                acc._doorInstance = new Doors(this, acc);
+                acc._doorInstance = new Door(this, acc);
             }
         });
     }
