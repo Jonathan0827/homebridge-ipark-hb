@@ -12,11 +12,15 @@ class Doors {
             acc.getService(Service.GarageDoorOpener) ||
             acc.addService(Service.GarageDoorOpener);
 
-        service.getCharacteristic(Characteristic.CurrentDoorState).onGet(0);
-        service.getCharacteristic(Characteristic.ObstructionDetected).onGet(0);
+        service
+            .getCharacteristic(Characteristic.CurrentDoorState)
+            .onGet(() => 0);
+        service
+            .getCharacteristic(Characteristic.ObstructionDetected)
+            .onGet(() => 0);
         service
             .getCharacteristic(Characteristic.TargetDoorState)
-            .onGet(0)
+            .onGet(() => 0)
             .onSet(this.open.bind(this));
     }
 
