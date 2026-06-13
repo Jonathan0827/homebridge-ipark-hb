@@ -1,6 +1,7 @@
 const Lightbulb = require("./lightbulb");
 const Thermostat = require("./thermostat");
 const Elevator = require("./elevator");
+const Door = require("./doors");
 const axios = require("axios");
 module.exports = (api) => {
     Service = api.hap.Service;
@@ -74,7 +75,7 @@ class Platform {
         }
         let doors = [];
         try {
-            doors = await Doors.discoverDevices(this);
+            doors = await Door.discoverDevices(this);
         } catch (e) {
             this.log.error("Door discovery failed", e.message);
             return;
