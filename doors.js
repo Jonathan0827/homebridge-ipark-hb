@@ -20,7 +20,7 @@ class Doors {
             .onGet(() => false);
         service
             .getCharacteristic(Characteristic.TargetDoorState)
-            .onGet(() => 0)
+            .onGet(() => 1)
             .onSet(this.open.bind(this));
     }
 
