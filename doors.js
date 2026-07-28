@@ -1,5 +1,6 @@
 const axios = require("axios");
-
+const https = require("https");
+const httpsAgent = new https.Agent({ rejectUnauthorized: false });
 class Doors {
     constructor(platform, acc) {
         this.platform = platform;
@@ -30,6 +31,7 @@ class Doors {
             const res = await axios.get(
                 "https://idj1.hdc-smart.com/v2/api/onepass/doors",
                 {
+                    httpsAgent,
                     headers: {
                         "access-token": platform.token,
                     },
@@ -45,7 +47,6 @@ class Doors {
                     name: d.lobby_name,
                 });
             }
-            platform.log.info("Discovered doors:", doorList);
             return doorList;
         } catch (e) {
             platform.log.error("Door discovery failed", e.message);
@@ -64,6 +65,7 @@ class Doors {
                 alias: "",
             },
             {
+                httpsAgent,
                 headers: {
                     "access-token": platform.token,
                 },

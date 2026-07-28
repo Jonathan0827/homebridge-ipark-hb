@@ -1,5 +1,6 @@
 const axios = require("axios");
-
+const https = require("https");
+const httpsAgent = new https.Agent({ rejectUnauthorized: false });
 class Elevator {
     constructor(platform, acc) {
         this.platform = platform;
@@ -44,6 +45,7 @@ class Elevator {
             "https://idj1.hdc-smart.com/v2/api/elevator/down",
             "down",
             {
+                httpsAgent,
                 headers: {
                     "access-token": platform.token,
                 },

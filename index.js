@@ -3,6 +3,9 @@ const Thermostat = require("./thermostat");
 const Elevator = require("./elevator");
 const Door = require("./doors");
 const axios = require("axios");
+const https = require("https");
+const httpsAgent = new https.Agent({ rejectUnauthorized: false });
+
 module.exports = (api) => {
     Service = api.hap.Service;
     Characteristic = api.hap.Characteristic;
@@ -19,6 +22,7 @@ class Platform {
             axios.create({
                 baseURL: "https://idj1.hdc-smart.com/v2/api/features",
                 headers: {
+                    httpsAgent,
                     "access-token": token,
                 },
             });
@@ -36,6 +40,7 @@ class Platform {
                 "https://center.hdc-smart.com/v3/auth/login",
                 "V2",
                 {
+                    httpsAgent,
                     headers: {
                         Authorization: this.config.auth,
                         "X-API-KEY": this.config.apiKey,
