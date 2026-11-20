@@ -24,6 +24,8 @@ class Platform {
                 headers: {
                     httpsAgent,
                     "access-token": token,
+                    "User-Agent":
+                        "Mozilla/5.0 (iPhone; CPU iPhone OS 18_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148",
                 },
             });
         api.on("didFinishLaunching", async () => {
@@ -44,6 +46,8 @@ class Platform {
                     headers: {
                         Authorization: this.config.auth,
                         "X-API-KEY": this.config.apiKey,
+                        "User-Agent":
+                            "Mozilla/5.0 (iPhone; CPU iPhone OS 18_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148",
                     },
                 },
             );
